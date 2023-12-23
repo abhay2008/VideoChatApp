@@ -2,9 +2,10 @@ const socket = io("/");
 
 let peer = new Peer(undefined, {
   path: "/peerjs",
-  host: window.location.hostname,
-  port: window.location.port || (window.location.protocol === 'https:' ? 443 : 80),
-})
+  host: "/",
+  port: location.protocol === 'https:' ? 443 : 3030,
+});
+
 
 const user = prompt("Enter your name");
 
@@ -16,7 +17,7 @@ let myStream;
 navigator.mediaDevices.getUserMedia({
   audio: true,
   video: true,
-}).then(stream => {
+}).then((stream) => {
   myStream = stream;
   addVideoStream(myVideo, stream);
 
@@ -98,6 +99,26 @@ $(function () {
         $("#stop_video").toggleClass("background_brown");
         $("#stop_video").html(html);
       }
+    })
+    $("#invite_button").click(function () {
+      let to = prompt("Enter mail address")
+      let data = {
+        url: window.location.href,
+        to: to
+      }
+      $.ajax({
+        url: "/send-mail",
+        data: JSON.stringify(data),
+        dataType: 'json',
+        contentType: 'application/json',
+        type: 'post',
+        success: function (res) {
+          alert("Invite sent!")
+        },
+        error: function (err) {
+          console.log(err.responseText)
+        }
+      })
     })
 })
 
